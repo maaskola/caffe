@@ -14,7 +14,7 @@ using std::min;
 using std::max;
 
 template <typename Dtype>
-void UnPoolingLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+void UnpoolingLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   PoolingParameter pool_param = this->layer_param_.pooling_param();
   if (pool_param.global_pooling()) {
@@ -79,7 +79,7 @@ void UnPoolingLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 }
 
 template <typename Dtype>
-void UnPoolingLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
+void UnpoolingLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   CHECK_EQ(4, bottom[0]->num_axes()) << "Input must have 4 axes, "
       << "corresponding to (num, channels, height, width)";
@@ -98,7 +98,7 @@ void UnPoolingLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 }
 
 template <typename Dtype>
-void UnPoolingLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+void UnpoolingLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   const Dtype* bottom_data = bottom[0]->cpu_data();
   const Dtype* mask_data = bottom[1]->cpu_data();
@@ -138,16 +138,16 @@ void UnPoolingLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 }
 
 template <typename Dtype>
-void UnPoolingLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
+void UnpoolingLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
     return;
 }
 
 
 #ifdef CPU_ONLY
-STUB_GPU(UnPoolingLayer);
+STUB_GPU(UnpoolingLayer);
 #endif
 
-INSTANTIATE_CLASS(UnPoolingLayer);
+INSTANTIATE_CLASS(UnpoolingLayer);
 
 }  // namespace caffe
