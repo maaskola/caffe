@@ -90,8 +90,8 @@ void UnPoolingLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
     kernel_h_ = bottom[0]->height();
     kernel_w_ = bottom[0]->width();
   }
-  unpooled_height_ = (height_ - 1) * 2 + 3 - 2 * pad_h_;
-  unpooled_width_ = (width_ - 1) * 2 + 3 - 2 * pad_w_;
+  unpooled_height_ = (height_ - 1) * 2 + kernel_h_ - 2 * pad_h_;
+  unpooled_width_ = (width_ - 1) * 2 + kernel_w_ - 2 * pad_w_;
 
   top[0]->Reshape(bottom[0]->num(), channels_, unpooled_height_,
       unpooled_width_);
