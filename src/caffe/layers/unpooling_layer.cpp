@@ -140,7 +140,41 @@ void UnpoolingLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void UnpoolingLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+  if (!propagate_down[0]) {
     return;
+  }
+  const Dtype* top_diff = top[0]->cpu_diff();
+  const Dtype* mask_data = bottom[1]->cpu_data();
+  Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();
+  // Different pooling methods. We explicitly do the switch outside the for
+  // loop to save time, although this results in more codes.
+  caffe_set(bottom[0]->count(), Dtype(0), bottom_diff);
+  switch (this->layer_param_.pooling_param().pool()) {
+  case PoolingParameter_PoolMethod_MAX:
+    // The main loop
+    for (int n = 0; n < top[0]->num(); ++n) {
+      for (int c = 0; c < channels_; ++c) {
+        for (int ph = 0; ph < height_; ++ph) {
+          for (int pw = 0; pw < width_; ++pw) {
+            const int index = ph * width_ + pw;
+            bottom_diff[index] = top_diff[static_cast<int>(mask_data[index])];
+          }
+        }
+        bottom_diff += bottom[0]->offset(0, 1);
+        top_diff += top[0]->offset(0, 1);
+        mask_data += bottom[1]->offset(0, 1);
+      }
+    }
+    break;
+  case PoolingParameter_PoolMethod_AVE:
+    NOT_IMPLEMENTED;
+    break;
+  case PoolingParameter_PoolMethod_STOCHASTIC:
+    NOT_IMPLEMENTED;
+    break;
+  default:
+    LOG(FATAL) << "Unknown pooling method.";
+  }
 }
 
 
