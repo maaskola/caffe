@@ -109,6 +109,8 @@ void UnpoolingLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   switch (this->layer_param_.pooling_param().pool()) {
   case PoolingParameter_PoolMethod_MAX:
     // Initialize
+    // TODO parameterize the value assigned to sub-maximal values
+    // TODO currently that value is -FLT_MAX
     caffe_set(top_count, Dtype(-FLT_MAX), top_data);
     // The main loop
     for (int n = 0; n < bottom[0]->num(); ++n) {
