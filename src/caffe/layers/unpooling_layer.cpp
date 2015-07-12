@@ -111,16 +111,19 @@ void UnPoolingLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     // Initialize
     caffe_set(top_count, Dtype(-FLT_MAX), top_data);
     // The main loop
-    for (int c = 0; c < channels_; ++c) {
-      for (int ph = 0; ph < height_; ++ph) {
-        for (int pw = 0; pw < width_; ++pw) {
-          const int index = ph * width_ + pw;
-          top_data[static_cast<int>(mask_data[index])] = bottom_data[index];
+    for (int n = 0; n < bottom[0]->num(); ++n) {
+      for (int c = 0; c < channels_; ++c) {
+        for (int ph = 0; ph < height_; ++ph) {
+          for (int pw = 0; pw < width_; ++pw) {
+            // TODO respect stride and padding; this is likely already ok!
+            const int index = ph * width_ + pw;
+            top_data[static_cast<int>(mask_data[index])] = bottom_data[index];
+          }
         }
+        bottom_data += bottom[0]->offset(0, 1);
+        mask_data += bottom[1]->offset(0, 1);
+        top_data += top[0]->offset(0, 1);
       }
-      bottom_data += bottom[0]->offset(0, 1);
-      mask_data += bottom[1]->offset(0, 1);
-      top_data += top[0]->offset(0, 1);
     }
     break;
   case PoolingParameter_PoolMethod_AVE:
