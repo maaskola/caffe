@@ -87,7 +87,7 @@ def get_layer_label(layer, rankdir):
                       layer.convolution_param.stride,
                       separator,
                       layer.convolution_param.pad)
-    elif layer.type == 'Pooling':
+    elif layer.type == 'Pooling' or layer.type == 'Unpooling':
         pooling_types_dict = get_pooling_types_dict()
         node_label = '"%s%s(%s %s)%skernel size: %d%sstride: %d%spad: %d"' %\
                      (layer.name,
@@ -111,7 +111,7 @@ def choose_color_by_layertype(layertype):
     color = '#6495ED'  # Default
     if layertype == 'Convolution':
         color = '#FF5050'
-    elif layertype == 'Pooling':
+    elif layertype == 'Pooling' or layertype == 'Unpooling':
         color = '#FF9900'
     elif layertype == 'InnerProduct':
         color = '#CC33FF'
